@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="dark" data-theme="blue">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lectures Platform</title>
+    <!-- Tailwind CSS Library -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#0f172a', 800: '#1e293b', 700: '#334155' }
+                    },
+                    fontFamily: { cairo: ['Cairo', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        
+        /* Custom Themes */
+        :root { --primary-color: #2563eb; --primary-hover: #1d4ed8; }
+        [data-theme="purple"] { --primary-color: #7c3aed; --primary-hover: #6d28d9; }
+        [data-theme="emerald"] { --primary-color: #059669; --primary-hover: #047857; }
+        [data-theme="amber"] { --primary-color: #d97706; --primary-hover: #b45309; }
+        [data-theme="rose"] { --primary-color: #e11d48; --primary-hover: #be123c; }
+
+        .dynamic-bg { background-color: var(--primary-color) !important; }
+        .dynamic-bg:hover { background-color: var(--primary-hover) !important; }
+        .dynamic-text { color: var(--primary-color) !important; }
+        .dynamic-border { border-color: var(--primary-color) !important; }
+
+        .theme-hover-card:hover {
+            border-color: var(--primary-color) !important;
+            background-color: rgba(37, 99, 235, 0.04);
+        }
+        html.dark .theme-hover-card:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-color: var(--primary-color) !important;
+        }
+
+        .recode-hover-card:hover {
+            border-color: #a855f7 !important;
+            background-color: rgba(168, 85, 247, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-3 sm:p-6 bg-gray-100 dark:bg-navy-900 text-gray-800 dark:text-white transition-colors duration-300">
+    
+    <!-- Main Header -->
+    <header class="max-w-4xl mx-auto mb-6">
+        <div class="flex justify-between items-center mb-4 px-2">
+            <!-- Controls: Dark Mode + Theme Menu -->
+            <div class="flex items-center gap-2">
+                <button onclick="toggleDarkMode()" class="bg-white dark:bg-navy-800 p-2.5 rounded-xl border border-gray-300 dark:border-navy-700 hover:scale-105 transition shadow">
+                    <i id="theme-icon" class="fas fa-sun text-yellow-500 text-base"></i>
+                </button>
+
+                <div class="relative">
+                    <button onclick="toggleThemeMenu()" class="bg-white dark:bg-navy-800 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-navy-700 hover:scale-105 transition shadow flex items-center gap-2 text-sm font-semibold">
+                        <i class="fas fa-palette dynamic-text"></i> <span class="hidden sm:inline">Theme</span>
+                    </button>
+                    <!-- Theme Dropdown -->
+                    <div id="theme-menu" class="absolute left-0 mt-2 w-44 bg-white dark:bg-navy-800 rounded-xl shadow-2xl border border-gray-200 dark:border-navy-700 p-2 hidden z-50 space-y-1">
+                        <button onclick="setTheme('blue')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 flex items-center gap-2 text-sm">
+                            <span class="w-3.5 h-3.5 rounded-full bg-blue-600 inline-block"></span> Royal Blue
+                        </button>
+                        <button onclick="setTheme('purple')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 flex items-center gap-2 text-sm">
+                            <span class="w-3.5 h-3.5 rounded-full bg-purple-600 inline-block"></span> Elegant Purple
+                        </button>
+                        <button onclick="setTheme('emerald')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 flex items-center gap-2 text-sm">
+                            <span class="w-3.5 h-3.5 rounded-full bg-emerald-600 inline-block"></span> Emerald Green
+                        </button>
+                        <button onclick="setTheme('amber')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 flex items-center gap-2 text-sm">
+                            <span class="w-3.5 h-3.5 rounded-full bg-amber-600 inline-block"></span> Warm Amber
+                        </button>
+                        <button onclick="setTheme('rose')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 flex items-center gap-2 text-sm">
+                            <span class="w-3.5 h-3.5 rounded-full bg-rose-600 inline-block"></span> Modern Rose
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Favorite Button -->
+            <button onclick="window.location.hash = '#favorites'" class="bg-white dark:bg-navy-800 hover:border-[var(--primary-color)] border border-gray-300 dark:border-navy-700 px-3.5 py-2 rounded-xl font-bold flex items-center gap-2 transition-all shadow-sm group text-sm">
+                <i class="fas fa-heart text-red-500 group-hover:scale-125 transition-transform duration-300"></i> 
+                <span class="text-gray-700 dark:text-gray-200">Favorite</span>
+                <span id="fav-count" class="dynamic-bg text-white text-xs px-2.5 py-0.5 rounded-full font-semibold shadow-sm">0</span>
+            </button>
+        </div>
+
+        <!-- Platform Title -->
+        <div class="text-center mb-4">
+            <h1 class="text-3xl font-bold dynamic-text mb-1">My Lectures</h1>
+            <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400" id="page-subtitle">Search for any lecture or file easily</p>
+        </div>
+        
+        <!-- Cache Status -->
+        <div id="cache-status" class="text-xs text-yellow-600 dark:text-yellow-400 mb-3 text-center font-semibold">
+            <i class="fas fa-spinner fa-spin mr-1"></i> Preparing instant search index...
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="relative max-w-md mx-auto px-2">
+            <input type="text" id="searchInput" placeholder="Search for lecture name here..." onkeyup="globalSearch()" class="w-full px-4 py-3 pl-10 bg-white dark:bg-navy-800 border border-gray-300 dark:border-navy-700 rounded-xl text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none dynamic-border transition shadow-inner text-sm">
+            <i class="fas fa-search absolute top-3.5 left-5 text-gray-400"></i>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto">
+        <!-- Search Results -->
+        <div id="search-results-section" class="space-y-3 hidden mb-6">
+            <h3 class="text-base font-bold dynamic-text border-b border-gray-300 dark:border-navy-700 pb-2">Search Results:</h3>
+            <div id="search-results-container" class="space-y-3"></div>
+        </div>
+
+        <!-- Favorites Section -->
+        <div id="favorites-section" class="space-y-3 hidden mb-6">
+            <div class="flex justify-between items-center border-b border-gray-300 dark:border-navy-700 pb-2">
+                <h3 class="text-base font-bold dynamic-text"><i class="fas fa-heart text-red-500 mr-2"></i> Favorite Lectures & Videos</h3>
+                <button onclick="goHome()" class="bg-gray-300 dark:bg-navy-700 hover:bg-gray-400 px-3 py-1 rounded-lg text-sm transition">Home</button>
+            </div>
+            <div id="favorites-container" class="space-y-3"></div>
+        </div>
+
+        <!-- Subjects Grid -->
+        <div id="subjects-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+        <!-- Folders Section -->
+        <div id="folders-section" class="hidden">
+            <button onclick="goHome()" class="mb-4 bg-gray-300 dark:bg-navy-700 hover:bg-gray-400 px-4 py-2 rounded-lg transition text-sm">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Subjects
+            </button>
+            <h2 id="current-subject-title" class="text-xl font-bold dynamic-text mb-4 border-b border-gray-300 dark:border-navy-700 pb-2"></h2>
+            <div id="folders-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- Files or Videos List -->
+        <div id="files-section" class="hidden">
+            <button id="back-to-folders" class="mb-4 bg-gray-300 dark:bg-navy-700 hover:bg-gray-400 px-4 py-2 rounded-lg transition text-sm">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Sections
+            </button>
+            <h2 id="current-folder-title" class="text-lg font-bold dynamic-text mb-4 border-b border-gray-300 dark:border-navy-700 pb-2"></h2>
+            
+            <div id="files-loader" class="hidden text-center py-10">
+                <i class="fas fa-circle-notch fa-spin text-3xl dynamic-text mb-2"></i>
+                <p class="text-gray-500 text-sm">Loading files...</p>
+            </div>
+            <div id="files-container" class="space-y-3"></div>
+        </div>
+    </main>
+
+    <!-- PDF Viewer Modal -->
+    <div id="viewer-modal" class="fixed inset-0 bg-black bg-opacity-85 hidden z-50 flex flex-col items-center justify-center p-1 sm:p-2">
+        <div class="w-full max-w-[98vw] bg-white dark:bg-navy-800 rounded-xl overflow-hidden shadow-2xl flex flex-col h-[98vh]">
+            <div class="px-3 py-2 bg-gray-200 dark:bg-navy-900 flex justify-between items-center border-b border-gray-300 dark:border-navy-700">
+                <h3 id="modal-file-title" class="text-xs sm:text-sm font-bold truncate text-gray-800 dark:text-gray-200">View File</h3>
+                <button onclick="closeViewer()" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+            <div class="flex-grow w-full relative bg-white">
+                <iframe id="viewer-iframe" class="w-full h-full absolute inset-0" src="" frameborder="0" allow="autoplay"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxlJCd462WbFVclg8Lm3hyHU1xYG0p9MtQ5ReGGsL1OVQvXnl15nUY1wpVCqVD4DBlg/exec';
+
+        const subjectsData = [
+            {
+                id: 1, title: 'Data Mining', icon: 'fa-chart-pie',
+                folders: [
+                    { title: 'Lectures', type: 'drive', id: '1SPMgXH6Pky-fevaaNMDycmTymnLmY30l' },
+                    { title: 'Questions', type: 'drive', id: '1J6-l0zmcRZRnQWyCX7D637gUF7poQmcE' },
+                    { title: 'Summaries', type: 'drive', id: '1HsXj71b0FHAnK4mzWP-LsXGgZcWBMJe2' },
+                    { title: 'Recodes', type: 'drive', id: '1hSrxt7rE6beeMe-D070X_OWx5uZh5Tj9' },
+                    { title: 'Sections', type: 'drive', id: '1ymaZI-YiQHO5R5QfbjzvgQRv3_RsfyQg' },
+                    { title: 'Videos', type: 'youtube', id: '1ojgyy6jBylIzR4E1Tyc155ieUGeYQH8I',
+                        videos:[
+                            {title:'Topic(1): Introduction to data Mining Part(1)',youtubeId:'zTcpuqQsJFE?si=wPk3ebL4g-kHxNuB'},
+                            {title:'Topic(1): Introduction to data Mining Part(2)',youtubeId:'6jNxGGbBFEE?si=CTSYO7BDbI-D-cwJ'},
+                            {title:'Topic(2): Data Concepts Techniques Part(1)',youtubeId:'C7FVXDbAIzc?si=O5_-d-VrO1qqizAj'},
+                            {title:'Topic(2): Data Concepts Techniques Part(2)',youtubeId:'DkDnfuIrFEg?si=GNvME6C_-bcwoQTV'},
+                            {title:'Topic(3): Data Preproccessing Part(1)',youtubeId:'qbF1sJuH6xM?si=X-E6GYX5saZV4ygv'},
+                            {title:'Topic(3): Data Preproccessing Part(2)',youtubeId:'DkDnfuIrFEg?si=8o3Oxe6riZBpZOIf'},
+                            {title:'All Playlist',link:'https://youtube.com/playlist?list=PLPBnj6azlABYqaiVl6Ee279Ghk2Muzrln&si=0Ib5fJ1f3w7v1Qdw'}
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 2, title: 'Cloud Computing', icon: 'fa-microchip',
+                folders: [
+                    { title: 'Lectures', type: 'drive', id: '1sl_Qab9LWxImVp9lNpZZsqngOKr6P1Mx' },
+                    { title: 'Questions', type: 'drive', id: '1UZ7mJMf9DpTvhPMSAVc_-r7ZnRAKc9df' },
+                    { title: 'Recodes', type: 'drive', id: '1HjqhpYlNnhIKontv3Pcs5jDPjA3BLc38' },
+                    { title: 'Summaries', type: 'drive', id: '1PN3wYCs3U4FN5q7vC-rNis1OF0NO68FZ' },
+                    { 
+                        title: 'Videos', 
+                        type: 'youtube', 
+                        videos: [
+                            { title: 'Cloud Types & Infrastructure Model', youtubeId: 'nlZunZM92_A' },
+                            { title: 'Lecture 1 - Module 1 (Option 1)', youtubeId: '-4W4Y_GYMp4' },
+                            { title: 'Lecture 1 - Module 1 (Alternative OR)', youtubeId: 'GFdghjmOS6Q' },
+                            { title: 'Lecture 2 - Module 2 (Option 1)', youtubeId: 'r2iy1Muo3oE' },
+                            { title: 'Lecture 2 - Module 2 (Option 2 OR)', youtubeId: '5ZARAdZ7JEU' },
+                            { title: 'Lecture 2 - Module 2 (Extra Link)', youtubeId: 'vVUIjRcSnWs' },
+                            { title: 'Lecture 3 - Module 3 (Part 1)', youtubeId: 'Oamdl17CbkM' },
+                            { title: 'Lecture 3 - Module 3 (Part 2)', youtubeId: 'a0oTymYucD4' },
+                            { title: 'Lecture 3 - Module 3 (Part 3 - Storage System Arch)', youtubeId: 'Sto62aZp-pA' },
+                            { title: 'Lecture 3 - Module 3 (Part 3 - Storage Alternative OR)', youtubeId: 'sswLpKeAoxs' },
+                            { title: 'Lecture 3 - Unified Storage & NAS Concept', youtubeId: 'CfYO8rg9KZ4' },
+                            { title: 'Lecture 3 - NAS Concept', youtubeId: '9KqRD9DohlA' },
+                            { title: 'Lecture 3 - NAS Scale Up Vs Scale Out', youtubeId: 'Oad42DHX-s0' },
+                            { title: 'Lecture 3 - Network (Part 1)', youtubeId: 'gVqg5jS7V1o' },
+                            { title: 'Lecture 3 - Network (Part 2)', youtubeId: 'nZGV2rxh1Es' },
+                            { title: 'Lecture 4 - Module 4 (Part 1)', youtubeId: 'ipUojGg4kyU' },
+                            { title: 'Lecture 4 - Module 4 (Part 2)', youtubeId: 'h1LB7_cUkEc' },
+                            { title: 'Lecture 5 - Module 5 (Part 1)', youtubeId: 'o3TEao-Wkxo' },
+                            { title: 'Lecture 5 - Module 5 (Part 2)', youtubeId: 'L91MPth9eBY' }
+                        ] 
+                    },
+                    { title: 'Sections', type: 'drive', id: '1EmL_woO7B9oIJashSGse8gy527cPClSg' }
+                ]
+            },
+            {
+                id: 3, title: 'DSS', icon: 'fa-database',
+                folders: [
+                    { title: 'Lectures', type: 'drive', id: '1kIG7NdWT5tiT6muIEnTeQpLrX9cG530v' },
+                    { title: 'Questions', type: 'drive', id: '11EvVeAcgNKvghDfBIYp9vH0T9p9BWBxD' },
+                    { title: 'Summaries', type: 'drive', id: '17TiSmLQDV12Qv9DVROOloFSDoUUezZRw' },
+                    { title: 'Sections', type: 'drive', id: '10UXwr1kNU3AgF5vHcdL9z1u0J1rMF4nF' },
+                    { title: 'Videos', type: 'drive', id: '12KGs6yUCHLvUHZQzpY2ZBih2DIkdXPgH' },
+                    { title: 'Recodes', type: 'drive', id: '1B1KTl_W3CVTxGxuAedgL31XnoMG5Hn1X' }
+                ]
+            },
+            {
+                id: 4, title: 'مراجعة النظم الالكترونية', icon: 'fa-search-dollar',
+                folders: [
+                    { title: 'Lectures', type: 'drive', id: '1ijF7U7Sz9u0w0W9GYMZPOGDGqE-WtZPm' },
+                    { title: 'Questions', type: 'drive', id: '1b4D0STL1wR-tit9IOib-Jh-HljP_AUNN' },
+                    { title: 'Summaries', type: 'drive', id: '1-ROYZbHLPbB1YOx4muipSlR5TOW9NWRr' },
+                    { title: 'Recodes', type: 'drive', id: '1JXD4zRblYjYr6DRjIEwhiAnKozDsYmxK' }
+                ]
+            },
+            {
+                id: 5, title: 'إدارة الاستراتيجية', icon: 'fa-lightbulb',
+                folders: [
+                    { title: 'Lectures', type: 'drive', id: '133ZI9NxZ07km0-oL3FyxG_k3ysrkkBgS' },
+                    { title: 'Questions', type: 'drive', id: '1mP7M1WVFIeait0gB1C09Bqc53YzZfTLy' },
+                    { title: 'Notes', type: 'drive', id: '1OpYCr0g9mRKBL4WJ0cBalNfgs7dZmuwQ' },
+                    { title: 'Recodes', type: 'drive', id: '1ckzi9s_gUd8-Rhn8Rne59QK262RLweK1' }
+                ]
+            },
+            {
+                id: 6, title: 'اللياقة البدنية', icon: 'fa-dumbbell',
+                folders: [
+                    { title: 'Lectures', type: 'drive', id: '1-iozVC96T-Kx1USZZ4gb4C3rGQpmdNr9' },
+                    { title: 'Questions', type: 'drive', id: '1M0hA9qLprbYJj2QlmnaIcQwTJ8GyVOni' },
+                    { title: 'Summaries', type: 'drive', id: '12FUiEGX3NSvtRUS7nzw--PFB0VM7ZiX4' },
+                    { title: 'Recodes', type: 'drive', id: '1hzJXsu_PblyU8QS6vMB_0dfmevL-wEkm' }
+                ]
+            },
+            {
+                id: 7, title: 'IT Audit', icon: 'fa-tasks',
+                folders: [
+                    { title: 'Lectures', type: 'drive', id: '1dnz_TCMhWa1_LYXb_5pCqX4KpYNLjf6p' },
+                    { title: 'Questions', type: 'drive', id: '1MwAsLCzhpB0hrCgUwI2qBinS51O1kkpG' },
+                    { title: 'Recodes', type: 'drive', id: '13ISpUyHeMAQnISB5cM2HIVkGz_5Ji9BK' },
+                    { title: 'Summaries', type: 'drive', id: '1-_ZLscy3cmzxVYxxccF_R3f3ZC0NrM2x' },
+                ]
+            },
+            {
+                id: 8, title: 'Strategic Management', icon: 'fa-chess',
+                folders: [
+                    { title: 'Lectures', type: 'drive', id: '1MLRrxh5ddxq7y9WxvMR-L_guhakAnEb8' },
+                    { title: 'Questions', type: 'drive', id: '1vogr60Dvf2a7GUk4VEggZ09XxdQYuFad' },
+                    { title: 'Recodes', type: 'drive', id: '1U4uVYguJQ1UuTNtsQkEiQt8UnhZRdxgX' },
+                    { title: 'Handwriting', type: 'drive', id: '1fqansV5Ag315SOrek-AAnECRE6KflpK9' }
+                ]
+            }
+        ];
+
+        let globalFilesCache = [];
+        let favorites = JSON.parse(localStorage.getItem('myFavorites')) || [];
+
+        const savedTheme = localStorage.getItem('appTheme') || 'blue';
+        setTheme(savedTheme);
+        updateFavCount();
+        renderSubjects();
+        initCache();
+
+        // إعادة التوجيه للرئيسية عند عمل Refresh (إلغاء الـ Hash القديم عند الفتح الأول)
+        if (window.location.hash) {
+            window.location.hash = '#home';
+        }
+
+        window.addEventListener('hashchange', handleRouting);
+        window.addEventListener('load', handleRouting);
+
+        function handleRouting() {
+            const hash = window.location.hash;
+            
+            if (!hash || hash === '#home') {
+                showHomeUI();
+            } else if (hash.startsWith('#subject=')) {
+                const subId = parseInt(hash.split('=')[1]);
+                const sub = subjectsData.find(s => s.id === subId);
+                if (sub) renderFoldersUI(sub);
+            } else if (hash.startsWith('#folder=')) {
+                const parts = hash.replace('#folder=', '').split('&');
+                const subId = parseInt(parts[0]);
+                const folderTitle = decodeURIComponent(parts[1]);
+                const sub = subjectsData.find(s => s.id === subId);
+                if (sub) {
+                    const folder = sub.folders.find(f => f.title === folderTitle);
+                    if (folder) {
+                        currentSubject = sub;
+                        if (folder.type === 'youtube') {
+                            renderMediaFolderUI(folder);
+                        } else {
+                            fetchFilesUI(folder.id, folder.title, sub);
+                        }
+                    }
+                }
+            } else if (hash === '#favorites') {
+                showFavoritesUI();
+            }
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = "fas fa-moon text-gray-700 text-base";
+            } else {
+                html.classList.add('dark');
+                icon.className = "fas fa-sun text-yellow-500 text-base";
+            }
+        }
+
+        function toggleThemeMenu() {
+            document.getElementById('theme-menu').classList.toggle('hidden');
+        }
+
+        function setTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            localStorage.setItem('appTheme', themeName);
+            document.getElementById('theme-menu').classList.add('hidden');
+        }
+
+        window.onclick = function(e) {
+            if (!e.target.closest('#theme-menu') && !e.target.closest('button[onclick="toggleThemeMenu()"]')) {
+                document.getElementById('theme-menu').classList.add('hidden');
+            }
+        }
+
+        function updateFavCount() {
+            document.getElementById('fav-count').innerText = favorites.length;
+        }
+
+        function getDirectDownloadUrl(link) {
+            let fileId = '';
+            if (link.includes('/d/')) {
+                fileId = link.split('/d/')[1].split('/')[0];
+            } else if (link.includes('id=')) {
+                fileId = new URLSearchParams(link.split('?')[1]).get('id');
+            }
+            return fileId ? `https://docs.google.com/uc?export=download&id=${fileId}` : link;
+        }
+
+        function toggleFavorite(title, link, subjectName, folderName, btnElement) {
+            const index = favorites.findIndex(f => f.link === link);
+            const icon = btnElement.querySelector('i');
+
+            if (index > -1) {
+                favorites.splice(index, 1);
+                icon.classList.remove('fas', 'text-red-500');
+                icon.classList.add('far', 'text-gray-400');
+            } else {
+                favorites.push({ title, link, subjectName, folderName });
+                icon.classList.remove('far', 'text-gray-400');
+                icon.classList.add('fas', 'text-red-500');
+            }
+            
+            localStorage.setItem('myFavorites', JSON.stringify(favorites));
+            updateFavCount();
+            
+            if (window.location.hash === '#favorites') showFavoritesUI();
+        }
+
+        async function initCache() {
+            try {
+                for (let sub of subjectsData) {
+                    for (let folder of sub.folders) {
+                        if (folder.type === 'youtube' || folder.type === 'telegram') continue;
+                        const res = await fetch(`${API_URL}?folderId=${folder.id}`);
+                        const files = await res.json();
+                        files.forEach(f => {
+                            globalFilesCache.push({
+                                title: f.title, link: f.link,
+                                subjectName: sub.title, folderName: folder.title
+                            });
+                        });
+                    }
+                }
+                document.getElementById('cache-status').innerHTML = '<i class="fas fa-check-circle text-green-500 mr-1"></i> Ready for instant search!';
+                setTimeout(() => document.getElementById('cache-status').style.display = 'none', 2000);
+            } catch (e) {
+                document.getElementById('cache-status').style.display = 'none';
+            }
+        }
+
+        function renderSubjects() {
+            const grid = document.getElementById('subjects-grid');
+            grid.innerHTML = '';
+            subjectsData.forEach(sub => {
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-navy-800 p-5 rounded-xl cursor-pointer theme-hover-card border border-gray-300 dark:border-navy-700 transition transform hover:-translate-y-1 shadow flex items-center justify-between';
+                card.onclick = () => { window.location.hash = `#subject=${sub.id}`; };
+                card.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="bg-blue-100 dark:bg-blue-900/50 p-3.5 rounded-lg dynamic-text">
+                            <i class="fas ${sub.icon} text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold">${sub.title}</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs">${sub.folders.length} sections</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function goHome() {
+            window.location.hash = '#home';
+        }
+
+        function showHomeUI() {
+            document.getElementById('folders-section').classList.add('hidden');
+            document.getElementById('files-section').classList.add('hidden');
+            document.getElementById('favorites-section').classList.add('hidden');
+            document.getElementById('search-results-section').classList.add('hidden');
+            document.getElementById('subjects-grid').classList.remove('hidden');
+            document.getElementById('page-subtitle').innerText = "Search for any lecture or file easily";
+            document.getElementById('searchInput').value = '';
+        }
+
+        function renderFoldersUI(sub) {
+            currentSubject = sub;
+            document.getElementById('subjects-grid').classList.add('hidden');
+            document.getElementById('files-section').classList.add('hidden');
+            document.getElementById('favorites-section').classList.add('hidden');
+            document.getElementById('search-results-section').classList.add('hidden');
+            
+            document.getElementById('folders-section').classList.remove('hidden');
+            document.getElementById('current-subject-title').innerText = sub.title;
+
+            const grid = document.getElementById('folders-grid');
+            grid.innerHTML = '';
+            sub.folders.forEach(folder => {
+                const card = document.createElement('div');
+                const isRec = folder.title.toLowerCase().includes('recode');
+                
+                if (folder.type === 'youtube') {
+                    card.onclick = () => { window.location.hash = `#folder=${sub.id}&${encodeURIComponent(folder.title)}`; };
+                    card.className = 'bg-white dark:bg-navy-800 p-4 rounded-xl cursor-pointer transition flex justify-between items-center shadow border border-gray-300 dark:border-navy-700 hover:bg-red-50 hover:border-red-300 dark:hover:bg-red-900/20 dark:hover:border-red-700';
+                } else if (folder.type === 'youtube-playlist') {
+                    card.onclick = () => {
+                        window.open(`https://www.youtube.com/playlist?list=${folder.playlistId}`, '_blank');
+                    };
+                    card.className = 'bg-white dark:bg-navy-800 p-4 rounded-xl cursor-pointer transition flex justify-between items-center shadow border border-gray-300 dark:border-navy-700 hover:bg-red-50 hover:border-red-300 dark:hover:bg-red-900/20 dark:hover:border-red-700';
+                } else if (isRec) {
+                    card.onclick = () => { window.location.hash = `#folder=${sub.id}&${encodeURIComponent(folder.title)}`; };
+                    card.className = 'bg-white dark:bg-navy-800 p-4 rounded-xl cursor-pointer recode-hover-card border border-gray-300 dark:border-navy-700 transition flex justify-between items-center shadow';
+                } else {
+                    card.onclick = () => { window.location.hash = `#folder=${sub.id}&${encodeURIComponent(folder.title)}`; };
+                    card.className = 'bg-white dark:bg-navy-800 p-4 rounded-xl cursor-pointer theme-hover-card border border-gray-300 dark:border-navy-700 transition flex justify-between items-center shadow';
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <i class="fas ${isRec ? 'fa-microphone-alt text-purple-500' : (folder.type === 'youtube' ? 'fa-video text-red-500' : 'fa-folder dynamic-text')} text-xl"></i>
+                        <span class="font-bold text-sm sm:text-base">${folder.title}</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderMediaFolderUI(folder) {
+            document.getElementById('folders-section').classList.add('hidden');
+            document.getElementById('files-section').classList.remove('hidden');
+            document.getElementById('current-folder-title').innerText = `${currentSubject.title} > ${folder.title}`;
+            document.getElementById('back-to-folders').onclick = () => { window.location.hash = `#subject=${currentSubject.id}`; };
+
+            const container = document.getElementById('files-container');
+            document.getElementById('files-loader').classList.add('hidden');
+            container.innerHTML = '';
+
+            if (!folder.videos && !folder.links) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No content available at the moment.</p>';
+                return;
+            }
+
+            const items = folder.videos || [];
+            items.forEach(item => {
+                const link = item.link || `https://www.youtube.com/watch?v=${item.youtubeId}`;
+                const isFav = favorites.some(f => f.link === link);
+
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-navy-800 p-4 rounded-xl border border-gray-300 dark:border-navy-700 flex justify-between items-center gap-3 shadow transition hover:bg-red-50 hover:border-red-300 dark:hover:bg-red-900/20 dark:hover:border-red-700';
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 truncate text-left">
+                        <i class="fab fa-youtube text-red-500 text-2xl flex-shrink-0"></i>
+                        <span class="font-bold text-sm truncate">${item.title}</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <a href="${link}" target="_blank" class="bg-red-600 hover:bg-red-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow">
+                            <i class="fas fa-play"></i> Watch
+                        </a>
+                        <button onclick="toggleFavorite('${item.title}', '${link}', '${currentSubject.title}', '${folder.title}', this)" class="p-2 transition hover:scale-110">
+                            <i class="${isFav ? 'fas text-red-500' : 'far text-gray-400'} fa-heart text-lg"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function fetchFilesUI(folderId, folderTitle, sub) {
+            document.getElementById('folders-section').classList.add('hidden');
+            document.getElementById('files-section').classList.remove('hidden');
+            document.getElementById('current-folder-title').innerText = `${sub.title} > ${folderTitle}`;
+            document.getElementById('back-to-folders').onclick = () => { window.location.hash = `#subject=${sub.id}`; };
+
+            const container = document.getElementById('files-container');
+            const loader = document.getElementById('files-loader');
+            container.innerHTML = '';
+            loader.classList.remove('hidden');
+
+            try {
+                const res = await fetch(`${API_URL}?folderId=${folderId}`);
+                const files = await res.json();
+                loader.classList.add('hidden');
+
+                if (files.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-4">No files available in this section.</p>';
+                    return;
+                }
+
+                const isRecodesFolder = folderTitle.toLowerCase().includes('recode');
+
+                files.forEach(file => {
+                    const isFav = favorites.some(f => f.link === file.link);
+                    const downloadUrl = getDirectDownloadUrl(file.link);
+                    
+                    const card = document.createElement('div');
+                    card.className = `bg-white dark:bg-navy-800 p-4 rounded-xl border border-gray-300 dark:border-navy-700 flex justify-between items-center gap-3 shadow transition ${isRecodesFolder ? 'recode-hover-card' : 'theme-hover-card'}`;
+                    
+                    card.innerHTML = `
+                        <div class="flex items-center gap-3 truncate text-left">
+                            <i class="${isRecodesFolder ? 'fas fa-microphone text-purple-500' : 'fas fa-file-pdf text-red-500'} text-xl flex-shrink-0"></i>
+                            <span class="font-bold text-sm truncate">${file.title}</span>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <button onclick="openViewer('${file.link}', '${file.title}')" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-lg text-xs flex items-center gap-1">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <a href="${downloadUrl}" class="dynamic-bg text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            <button onclick="toggleFavorite('${file.title}', '${file.link}', '${sub.title}', '${folderTitle}', this)" class="p-2 transition hover:scale-110">
+                                <i class="${isFav ? 'fas text-red-500' : 'far text-gray-400'} fa-heart text-lg"></i>
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                loader.classList.add('hidden');
+                container.innerHTML = '<p class="text-red-500 text-center py-4">Failed to fetch files. Please check sharing permissions.</p>';
+            }
+        }
+
+        function globalSearch() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const subjectsGrid = document.getElementById('subjects-grid');
+            const searchSec = document.getElementById('search-results-section');
+            const container = document.getElementById('search-results-container');
+            
+            document.getElementById('favorites-section').classList.add('hidden');
+            document.getElementById('folders-section').classList.add('hidden');
+            document.getElementById('files-section').classList.add('hidden');
+
+            if (!query) {
+                searchSec.classList.add('hidden');
+                subjectsGrid.classList.remove('hidden');
+                return;
+            }
+
+            subjectsGrid.classList.add('hidden');
+            searchSec.classList.remove('hidden');
+            container.innerHTML = '';
+
+            const matches = globalFilesCache.filter(f => f.title.toLowerCase().includes(query));
+            if (matches.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No matching results found.</p>';
+                return;
+            }
+
+            matches.forEach(item => {
+                const isFav = favorites.some(f => f.link === item.link);
+                const downloadUrl = getDirectDownloadUrl(item.link);
+                const isRecItem = item.folderName.toLowerCase().includes('recode');
+
+                const card = document.createElement('div');
+                card.className = `bg-white dark:bg-navy-800 p-4 rounded-xl border border-gray-300 dark:border-navy-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow transition ${isRecItem ? 'recode-hover-card' : 'theme-hover-card'}`;
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 text-left">
+                        <i class="${isRecItem ? 'fas fa-microphone text-purple-500' : 'fas fa-file-pdf text-red-500'} text-xl flex-shrink-0"></i>
+                        <div>
+                            <h4 class="font-bold text-sm">${item.title}</h4>
+                            <p class="text-xs text-gray-400 mt-1"><span class="text-blue-400">${item.subjectName}</span> / <span class="text-yellow-500">${item.folderName}</span></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-start">
+                        <button onclick="openViewer('${item.link}', '${item.title}')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <a href="${downloadUrl}" class="dynamic-bg text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                        <button onclick="toggleFavorite('${item.title}', '${item.link}', '${item.subjectName}', '${item.folderName}', this)" class="p-2 transition hover:scale-110">
+                            <i class="${isFav ? 'fas text-red-500' : 'far text-gray-400'} fa-heart text-lg"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showFavoritesUI() {
+            document.getElementById('subjects-grid').classList.add('hidden');
+            document.getElementById('folders-section').classList.add('hidden');
+            document.getElementById('files-section').classList.add('hidden');
+            document.getElementById('search-results-section').classList.add('hidden');
+            document.getElementById('favorites-section').classList.remove('hidden');
+
+            const container = document.getElementById('favorites-container');
+            container.innerHTML = '';
+
+            if (favorites.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No favorite lectures or videos added yet.</p>';
+                return;
+            }
+
+            favorites.forEach(item => {
+                const isYouTube = item.link.includes('youtube.com') || item.link.includes('youtu.be');
+                const downloadUrl = getDirectDownloadUrl(item.link);
+                const isRecFav = item.folderName.toLowerCase().includes('recode');
+
+                const card = document.createElement('div');
+                card.className = `bg-white dark:bg-navy-800 p-4 rounded-xl border border-gray-300 dark:border-navy-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow transition ${isRecFav ? 'recode-hover-card' : 'theme-hover-card'}`;
+                
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 text-left">
+                        <i class="${isYouTube ? 'fab fa-youtube text-red-500' : (isRecFav ? 'fas fa-microphone text-purple-500' : 'fas fa-file-pdf text-red-500')} text-xl flex-shrink-0"></i>
+                        <div>
+                            <h4 class="font-bold text-sm">${item.title}</h4>
+                            <p class="text-xs text-gray-400 mt-1"><span class="text-blue-400">${item.subjectName}</span> / <span class="text-yellow-500">${item.folderName}</span></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-start">
+                        ${isYouTube ? 
+                            `<a href="${item.link}" target="_blank" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1"><i class="fas fa-play"></i> Watch</a>` :
+                            `<button onclick="openViewer('${item.link}', '${item.title}')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-eye"></i> View</button>
+                             <a href="${downloadUrl}" class="dynamic-bg text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1"><i class="fas fa-download"></i> Download</a>`
+                        }
+                        <button onclick="toggleFavorite('${item.title}', '${item.link}', '${item.subjectName}', '${item.folderName}', this); showFavoritesUI();" class="p-2 text-red-500 transition hover:scale-110">
+                            <i class="fas fa-heart text-lg"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openViewer(link, title) {
+            let previewUrl = link;
+            if (link.includes('/view')) {
+                previewUrl = link.replace('/view', '/preview');
+            } else if (!link.includes('/preview')) {
+                previewUrl = link + (link.includes('?') ? '&' : '?') + 'usp=sharing';
+            }
+            document.getElementById('modal-file-title').innerText = title;
+            document.getElementById('viewer-iframe').src = previewUrl;
+            document.getElementById('viewer-modal').classList.remove('hidden');
+        }
+
+        function closeViewer() {
+            document.getElementById('viewer-modal').classList.add('hidden');
+            document.getElementById('viewer-iframe').src = '';
+        }
+    </script>
+</body>
+</html>
